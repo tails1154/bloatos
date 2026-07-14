@@ -156,10 +156,6 @@ xclip
 ###      REPO KEYRINGS (stay after install)         ###
 #######################################################
 
-# Chaotic-AUR keys and mirrorlist
-chaotic-mirrorlist
-chaotic-keyring
-
 # BLOAT OS custom repo keyring (if we had one)
 #bloatos-keyring
 
@@ -225,8 +221,8 @@ firefox
 chromium
 
 # From Chaotic-AUR (if available)
-brave-bin
-zen-browser-bin
+#brave-bin
+#zen-browser-bin
 
 #######################################################
 ###         BLOAT - MEDIA & CREATIVE                ###
@@ -253,7 +249,7 @@ gamemode
 mangohud
 
 # From Chaotic-AUR
-heroic-games-launcher-bin
+#heroic-games-launcher-bin
 
 #######################################################
 ###         BLOAT - COMMUNICATION                   ###
@@ -263,7 +259,7 @@ discord
 telegram-desktop
 
 # From Chaotic-AUR
-spotify
+#spotify
 
 #######################################################
 ###         BLOAT - OFFICE                          ###
