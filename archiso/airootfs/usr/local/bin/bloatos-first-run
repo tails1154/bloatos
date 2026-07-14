@@ -21,19 +21,23 @@ INSTALL_MEDIA=true
 INSTALL_THEMES=true
 INSTALL_FUN=true
 INSTALL_OFFICE=true
+INSTALL_FLATPAK=true
+INSTALL_VESKTOP=true
 
 # Show the BLOAT dialog using kdialog or zenity
 show_bloat_dialog() {
     if command -v kdialog &>/dev/null; then
         RESULT=$(kdialog --checklist "BLOAT OS - Select Your BLOAT" \
             ai "AI & Machine Learning (ollama, pytorch)" on \
-            games "Gaming (Steam, Lutris, Heroic, MangoHud)" on \
+            games "Gaming (Steam, Lutris, Heroic, MangoHud, Sober)" on \
             browsers "Extra Browsers (Brave, Zen)" on \
             dev "Development (Docker, extra tools)" on \
             media "Media & Creative (OBS, Krita, extra codecs)" on \
             themes "Themes & Eye Candy (icons, cursors, conky)" on \
             fun "Fun & Useless (cmatrix, cowsay, nyancat)" on \
             office "Office Suite (LibreOffice, OnlyOffice)" on \
+            flatpak "Flatpak Apps (Sober for Roblox)" on \
+            vesktop "Vesktop (Discord client mod)" on \
             --title "BLOAT OS - Install BLOAT" \
             --geometry 600x500)
     elif command -v zenity &>/dev/null; then
@@ -42,17 +46,19 @@ show_bloat_dialog() {
             --text="Select the bloat you want installed:" \
             --column="Install" --column="Category" --column="Description" \
             TRUE "ai" "AI & Machine Learning (ollama, pytorch)" \
-            TRUE "games" "Gaming (Steam, Lutris, Heroic, MangoHud)" \
+            TRUE "games" "Gaming (Steam, Lutris, Heroic, MangoHud, Sober)" \
             TRUE "browsers" "Extra Browsers (Brave, Zen)" \
             TRUE "dev" "Development (Docker, extra tools)" \
             TRUE "media" "Media & Creative (OBS, Krita, extra codecs)" \
             TRUE "themes" "Themes & Eye Candy (icons, cursors, conky)" \
             TRUE "fun" "Fun & Useless (cmatrix, cowsay, nyancat)" \
-            TRUE "office" "Office Suite (LibreOffice, OnlyOffice)")
+            TRUE "office" "Office Suite (LibreOffice, OnlyOffice)" \
+            TRUE "flatpak" "Flatpak Apps (Sober for Roblox)" \
+            TRUE "vesktop" "Vesktop (Discord client mod)")
     else
         # Fallback: install everything
         echo "No dialog tool found. Installing ALL THE BLOAT!"
-        RESULT="ai games browsers dev media themes fun office"
+        RESULT="ai games browsers dev media themes fun office flatpak vesktop"
     fi
     echo "$RESULT"
 }
@@ -67,7 +73,7 @@ install_bloat() {
     fi
 
     if [[ "$selections" == *"games"* ]]; then
-        packages+=" steam lutris wine gamemode mangohud heroic-games-launcher-bin"
+        packages+=" steam lutris wine gamemode mangohud"
     fi
 
     if [[ "$selections" == *"browsers"* ]]; then
@@ -94,6 +100,10 @@ install_bloat() {
         packages+=" libreoffice-fresh onlyoffice-bin"
     fi
 
+    if [[ "$selections" == *"vesktop"* ]]; then
+        packages+=" vesktop-bin"
+    fi
+
     if [[ -n "$packages" ]]; then
         # Show installation progress
         if command -v kdialog &>/dev/null; then
@@ -106,6 +116,39 @@ install_bloat() {
         # Fallback: use pkexec directly
         pkexec pacman -S --noconfirm $packages
     fi
+
+    # Install Flatpak apps separately (Sober, etc.)
+    if [[ "$selections" == *"flatpak"* ]]; then
+        install_flatpak_apps
+    fi
+}
+
+# Install Flatpak applications
+install_flatpak_apps() {
+    echo "Setting up Flatpak..."
+
+    # Ensure flatpak is installed
+    if ! command -v flatpak &>/dev/null; then
+        pkexec pacman -S --noconfirm flatpak || {
+            echo "ERROR: flatpak not installed and could not be installed"
+            return 1
+        }
+    fi
+
+    # Add flathub
+    pkexec flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+    # Add VinegarHQ repo for Sober
+    pkexec flatpak remote-add --if-not-exists vinegar https://vinegarhq.org/repo/vinegar.flatpakrepo
+
+    # Install Sober (Roblox on Linux)
+    echo "Installing Sober (Roblox)..."
+    pkexec flatpak install -y vinegar org.vinegarhq.Sober
+
+    # Install other flatpak bloat if wanted
+    # pkexec flatpak install -y flathub com.spotify.Client
+
+    echo "Flatpak apps installed!"
 }
 
 # Main

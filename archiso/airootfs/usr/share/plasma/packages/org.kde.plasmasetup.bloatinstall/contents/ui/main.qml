@@ -23,7 +23,9 @@ PlasmaSetupComponents.SetupModule {
         "media": true,
         "themes": true,
         "fun": true,
-        "office": true
+        "office": true,
+        "flatpak": true,
+        "vesktop": true
     }
 
     function onPageActivated() {
@@ -153,6 +155,32 @@ PlasmaSetupComponents.SetupModule {
                     description: i18n("LibreOffice Fresh, OnlyOffice")
                     checked: root.selections.office
                     onCheckedChanged: root.selections.office = checked
+                }
+            }
+
+            // Flatpak & Sober
+            FormCard.FormCard {
+                Layout.alignment: Qt.AlignHCenter
+                maximumWidth: root.cardWidth
+
+                FormCard.FormSwitchDelegate {
+                    text: i18n("Flatpak Apps")
+                    description: i18n("Sober (Roblox on Linux) via Flatpak")
+                    checked: root.selections.flatpak
+                    onCheckedChanged: root.selections.flatpak = checked
+                }
+            }
+
+            // Vesktop
+            FormCard.FormCard {
+                Layout.alignment: Qt.AlignHCenter
+                maximumWidth: root.cardWidth
+
+                FormCard.FormSwitchDelegate {
+                    text: i18n("Vesktop")
+                    description: i18n("Discord client mod with Vencord built-in")
+                    checked: root.selections.vesktop
+                    onCheckedChanged: root.selections.vesktop = checked
                 }
             }
 

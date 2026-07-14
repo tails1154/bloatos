@@ -258,6 +258,13 @@ mangohud
 discord
 telegram-desktop
 
+# Flatpak + Sober (Roblox on Linux)
+flatpak
+flatpak-builder
+
+# Vesktop (Discord client mod - AUR/Chaotic-AUR)
+#vesktop-bin
+
 # From Chaotic-AUR
 #spotify
 
