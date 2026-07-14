@@ -1,331 +1,91 @@
+# Base archiso packages (minimal live env)
 alsa-utils
 amd-ucode
 arch-install-scripts
-archinstall
-b43-fwcutter
 base
-bcachefs-tools
-bind
-bolt
-brltty
-broadcom-wl
 btrfs-progs
-clonezilla
-cloud-init
 cryptsetup
-darkhttpd
-ddrescue
-dhclient
-dhcpcd
 diffutils
 dmidecode
-dmraid
-dnsmasq
 dosfstools
 e2fsprogs
-edk2-shell
 efibootmgr
-espeakup
 ethtool
 exfatprogs
 f2fs-tools
-fatresize
-foot-terminfo
-fsarchiver
-gpart
-gpm
 gptfdisk
 grml-zsh-config
 grub
-hdparm
-hyperv
 intel-ucode
-irssi
-iw
 iwd
 jfsutils
-kitty-terminfo
-ldns
 less
-lftp
-libfido2
-libusb-compat
 linux
-linux-atm
 linux-firmware
-linux-firmware-marvell
-livecd-sounds
-lsscsi
 lvm2
-lynx
 man-db
 man-pages
-mc
 mdadm
-memtest86+
-memtest86+-efi
 mkinitcpio
 mkinitcpio-archiso
 mkinitcpio-nfs-utils
-modemmanager
 mtools
 nano
-nbd
 ndisc6
 nfs-utils
-nilfs-utils
-nmap
 ntfs-3g
-nvme-cli
-open-iscsi
-open-vm-tools
-openconnect
-openpgp-card-tools
 openssh
-openvpn
-partclone
 parted
-partimage
-pcsclite
 ppp
-pptpclient
-pv
-qemu-guest-agent
-refind
 reflector
-rp-pppoe
 rsync
-rxvt-unicode-terminfo
-screen
-sdparm
-sequoia-sq
-sg3_utils
-smartmontools
-sof-firmware
-squashfs-tools
 sudo
 syslinux
 systemd-resolvconf
 tcpdump
 terminus-font
 testdisk
-tmux
-tpm2-tools
-tpm2-tss
-udftools
-usb_modeswitch
-usbmuxd
 usbutils
 vim
-virtualbox-guest-utils
-vpnc
 wireless-regdb
 wireless_tools
 wpa_supplicant
 wvdial
 xfsprogs
-xl2tpd
 zsh
 
 
 # everything above comes from archiso releng folder
 #######################################################
-###                  BLOAT OS                       ###
-#######################################################
-
-#######################################################
-###  LIVE ISO ONLY - REMOVED AFTER INSTALLATION     ###
+###               BLOAT OS INSTALLER                ###
 #######################################################
 
 # Calamares installer
 alci-calamares
 alci-calamares-config
 
-# Xorg for live session (Calamares needs it)
+# Xorg for live session (Calamares GUI)
 xorg-server
 xorg-xinit
 xorg-apps
-xorg-xkill
 xterm
-
-# Minimal live session tools
 xdg-utils
 xclip
 
-#######################################################
-###      REPO KEYRINGS (stay after install)         ###
-#######################################################
-
-# BLOAT OS custom repo keyring (if we had one)
-#bloatos-keyring
-
-#######################################################
-###         CORE DESKTOP ENVIRONMENT                ###
-#######################################################
-
-# Display manager
-sddm
-
-# Full KDE Plasma (THE BLOAT BEGINS)
-plasma-meta
-plasma-workspace
-plasma-desktop
-plasma-setup-git
-
-# Full KDE Applications
-kde-applications-meta
-
-# KDE extras
-kde-gtk-config
-kdeconnect
-plasma-nm
-plasma-pa
-konsole
-dolphin
-kate
-kwrite
-
-#######################################################
-###         ESSENTIAL SYSTEM TOOLS                  ###
-#######################################################
-
-bash-completion
-os-prober
+# Networking in live env
 networkmanager
 network-manager-applet
-make
+iw
+wpa_supplicant
+dhcpcd
+
+# Live session tools
+bash-completion
+reflector
 git
-base-devel
-linux-headers
-mkinitcpio-openswap
+wget
+curl
 
-#######################################################
-###         BLOAT - DEVELOPMENT                     ###
-#######################################################
-
-neovim
-emacs
-github-cli
-docker
-podman
-python
-python-pip
-nodejs
-npm
-
-#######################################################
-###         BLOAT - BROWSERS                        ###
-#######################################################
-
-firefox
-chromium
-
-# From Chaotic-AUR (if available)
-#brave-bin
-#zen-browser-bin
-
-#######################################################
-###         BLOAT - MEDIA & CREATIVE                ###
-#######################################################
-
-obs-studio
-blender
-gimp
-inkscape
-krita
-kdenlive
-vlc
-ffmpeg
-imagemagick
-
-#######################################################
-###         BLOAT - GAMING                          ###
-#######################################################
-
-steam
-lutris
-wine
-gamemode
-mangohud
-
-# From Chaotic-AUR
-#heroic-games-launcher-bin
-
-#######################################################
-###         BLOAT - COMMUNICATION                   ###
-#######################################################
-
-discord
-telegram-desktop
-
-# Flatpak + Sober (Roblox on Linux)
-flatpak
-flatpak-builder
-
-# Vesktop (Discord client mod - AUR/Chaotic-AUR)
-#vesktop-bin
-
-# From Chaotic-AUR
-#spotify
-
-#######################################################
-###         BLOAT - OFFICE                          ###
-#######################################################
-
-libreoffice-fresh
-
-#######################################################
-###         BLOAT - THEMES & EYE CANDY              ###
-#######################################################
-
-papirus-icon-theme
-breeze-icons
-archlinux-wallpaper
-fastfetch
-
-#######################################################
-###         BLOAT - FUN & USELESS                   ###
-#######################################################
-
-cmatrix
-cowsay
-figlet
-lolcat
-fortune-mod
-nyancat
-sl
-toilet
-asciiquarium
-
-#######################################################
-###         BLOAT - AI & ML (ULTIMATE BLOAT)        ###
-#######################################################
-
-# If available in repos or Chaotic-AUR
-ollama
-python-pytorch
-python-tensorflow
-python-numpy
-python-pandas
-
-#######################################################
-###         DRIVERS & HARDWARE                      ###
-#######################################################
-
-# Graphics drivers
-xf86-video-intel
-xf86-video-amdgpu
-xf86-video-nouveau
-#xf86-video-vmware
-#nvidia (install manually if you have an NVIDIA GPU)
-
-# Virtualization
-virtualbox
-virtualbox-host-modules-arch
-qemu-full
-
-#######################################################
-###         GRUB THEME                              ###
-#######################################################
-
-alci-grub-theme-git
+# Repo keys (for target system installation)
+#chaotic-keyring
+#chaotic-mirrorlist

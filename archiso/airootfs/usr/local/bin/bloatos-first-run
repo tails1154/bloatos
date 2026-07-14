@@ -1,6 +1,6 @@
 #!/bin/bash
 # BLOAT OS First-Run Bloat Installer
-# Runs on the new user's first login to install selected bloat.
+# Installs ALL THE BLOAT from repos on first login.
 
 CONFIG_FILE="$HOME/.config/bloatos/bloat-selections.conf"
 FLAG_FILE="$HOME/.config/bloatos/first-run-done"
@@ -21,6 +21,7 @@ INSTALL_MEDIA=true
 INSTALL_THEMES=true
 INSTALL_FUN=true
 INSTALL_OFFICE=true
+INSTALL_COMMS=true
 INSTALL_FLATPAK=true
 INSTALL_VESKTOP=true
 
@@ -36,8 +37,8 @@ show_bloat_dialog() {
             themes "Themes & Eye Candy (icons, cursors, conky)" on \
             fun "Fun & Useless (cmatrix, cowsay, nyancat)" on \
             office "Office Suite (LibreOffice, OnlyOffice)" on \
+            comms "Communication (Discord, Telegram, Vesktop, Spotify)" on \
             flatpak "Flatpak Apps (Sober for Roblox)" on \
-            vesktop "Vesktop (Discord client mod)" on \
             --title "BLOAT OS - Install BLOAT" \
             --geometry 600x500)
     elif command -v zenity &>/dev/null; then
@@ -53,116 +54,108 @@ show_bloat_dialog() {
             TRUE "themes" "Themes & Eye Candy (icons, cursors, conky)" \
             TRUE "fun" "Fun & Useless (cmatrix, cowsay, nyancat)" \
             TRUE "office" "Office Suite (LibreOffice, OnlyOffice)" \
+            TRUE "comms" "Communication (Discord, Telegram, Vesktop, Spotify)" \
             TRUE "flatpak" "Flatpak Apps (Sober for Roblox)" \
             TRUE "vesktop" "Vesktop (Discord client mod)")
     else
-        # Fallback: install everything
         echo "No dialog tool found. Installing ALL THE BLOAT!"
-        RESULT="ai games browsers dev media themes fun office flatpak vesktop"
+        RESULT="ai games browsers dev media themes fun office comms flatpak vesktop"
     fi
     echo "$RESULT"
 }
 
-# Install selected packages
 install_bloat() {
     local selections="$1"
     local packages=""
 
+    # AI & ML
     if [[ "$selections" == *"ai"* ]]; then
         packages+=" ollama python-pytorch python-tensorflow python-numpy python-pandas"
     fi
 
+    # Gaming
     if [[ "$selections" == *"games"* ]]; then
-        packages+=" steam lutris wine gamemode mangohud"
+        packages+=" steam lutris wine wine-mono wine-gecko gamemode mangohud"
     fi
 
+    # Browsers
     if [[ "$selections" == *"browsers"* ]]; then
         packages+=" brave-bin zen-browser-bin"
     fi
 
+    # Development
     if [[ "$selections" == *"dev"* ]]; then
-        packages+=" docker podman python-pip nodejs npm github-cli"
+        packages+=" docker podman python-pip nodejs npm github-cli neovim emacs"
     fi
 
+    # Media & Creative
     if [[ "$selections" == *"media"* ]]; then
-        packages+=" obs-studio krita kdenlive vlc ffmpeg imagemagick"
+        packages+=" obs-studio blender gimp inkscape krita kdenlive vlc ffmpeg imagemagick"
     fi
 
+    # Themes & Eye Candy
     if [[ "$selections" == *"themes"* ]]; then
-        packages+=" papirus-icon-theme archlinux-wallpaper neofetch conky variety"
+        packages+=" papirus-icon-theme breeze-icons archlinux-wallpaper neofetch conky variety"
     fi
 
+    # Fun & Useless
     if [[ "$selections" == *"fun"* ]]; then
-        packages+=" cmatrix cowsay figlet lolcat fortune-mod nyancat sl cbonsai toilet asciiquarium oneko xeyes"
+        packages+=" cmatrix cowsay figlet lolcat fortune-mod nyancat sl toilet asciiquarium fastfetch"
     fi
 
+    # Office
     if [[ "$selections" == *"office"* ]]; then
         packages+=" libreoffice-fresh onlyoffice-bin"
     fi
 
+    # Communication
+    if [[ "$selections" == *"comms"* ]]; then
+        packages+=" discord telegram-desktop spotify"
+    fi
+
+    # Vesktop (AUR/Chaotic)
     if [[ "$selections" == *"vesktop"* ]]; then
         packages+=" vesktop-bin"
     fi
 
     if [[ -n "$packages" ]]; then
-        # Show installation progress
+        echo "Installing: $packages"
         if command -v kdialog &>/dev/null; then
             dbusRef=$(kdialog --progressbar "Installing BLOAT... This may take a while." 100)
+            pkexec pacman -S --noconfirm $packages
+            qdbus $dbusRef close
         elif command -v zenity &>/dev/null; then
-            (echo "Installing BLOAT packages..."; pkexec pacman -S --noconfirm $packages) | zenity --progress --pulsate --title="Installing BLOAT" --text="Installing your selected bloat packages..." --auto-close
-            return
+            (echo "Installing BLOAT packages..."; pkexec pacman -S --noconfirm $packages) | zenity --progress --pulsate --title="Installing BLOAT" --auto-close
+        else
+            pkexec pacman -S --noconfirm $packages
         fi
-
-        # Fallback: use pkexec directly
-        pkexec pacman -S --noconfirm $packages
     fi
 
-    # Install Flatpak apps separately (Sober, etc.)
+    # Flatpak apps
     if [[ "$selections" == *"flatpak"* ]]; then
         install_flatpak_apps
     fi
 }
 
-# Install Flatpak applications
 install_flatpak_apps() {
     echo "Setting up Flatpak..."
-
-    # Ensure flatpak is installed
     if ! command -v flatpak &>/dev/null; then
-        pkexec pacman -S --noconfirm flatpak || {
-            echo "ERROR: flatpak not installed and could not be installed"
-            return 1
-        }
+        pkexec pacman -S --noconfirm flatpak
     fi
-
-    # Add flathub
     pkexec flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
-    # Add VinegarHQ repo for Sober
     pkexec flatpak remote-add --if-not-exists vinegar https://vinegarhq.org/repo/vinegar.flatpakrepo
-
-    # Install Sober (Roblox on Linux)
     echo "Installing Sober (Roblox)..."
     pkexec flatpak install -y vinegar org.vinegarhq.Sober
-
-    # Install other flatpak bloat if wanted
-    # pkexec flatpak install -y flathub com.spotify.Client
-
-    echo "Flatpak apps installed!"
 }
 
-# Main
 SELECTIONS=$(show_bloat_dialog)
-
 if [[ -n "$SELECTIONS" ]]; then
     install_bloat "$SELECTIONS"
     echo "Selections: $SELECTIONS" > "$CONFIG_FILE"
 fi
 
-# Mark as done
 touch "$FLAG_FILE"
 
-# Show completion message
 if command -v kdialog &>/dev/null; then
     kdialog --msgbox "BLOAT installation complete! Enjoy your bloated system!"
 elif command -v zenity &>/dev/null; then
