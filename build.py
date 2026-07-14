@@ -1,0 +1,155 @@
+#!/usr/bin/env python3
+"""BLOAT OS builder - build ISOs, copy to USB, run in QEMU."""
+
+import argparse
+import subprocess
+import shutil
+import os
+import sys
+import threading
+import time
+from pathlib import Path
+from datetime import datetime
+
+# BLOAT OS paths
+ROOT = Path(__file__).resolve().parent
+BLOATOS_ISO = Path.home() / "Documents" / "vibecoding" / "bloatos" / "bloatos-iso" / "archiso"
+WORK = ROOT / "work"
+OUT = ROOT / "out"
+ISO_PATTERN = "bloatos-*.iso"
+
+def log(msg):
+    print(f"[{datetime.now():%H:%M:%S}] {msg}")
+
+_sudo_loop = None
+
+def sudoloop():
+    while True:
+        time.sleep(60)
+        subprocess.run(["sudo", "-v"], check=False)
+
+def run(cmd, **kw):
+    log(f"Running: {' '.join(str(c) for c in cmd)}")
+    if cmd and "sudo" in (cmd[0] if isinstance(cmd, list) else str(cmd).split()[0]):
+        global _sudo_loop
+        if _sudo_loop is None:
+            _sudo_loop = threading.Thread(target=sudoloop, daemon=True)
+            _sudo_loop.start()
+    kw.setdefault('check', True)
+    return subprocess.run(cmd, **kw)
+
+def find_iso():
+    isos = sorted(OUT.glob(ISO_PATTERN))
+    return str(isos[-1]) if isos else None
+
+def cmd_build(args):
+    log("Cleaning up...")
+    run(["sudo", "umount", "-R", str(WORK)], check=False)
+    run(["sudo", "losetup", "-D"], check=False)
+    run(["sudo", "rm", "-rf", str(WORK)])
+    for f in OUT.glob("bloatos-*.iso"):
+        if f.stat().st_size == 0:
+            f.unlink()
+    OUT.mkdir(parents=True, exist_ok=True)
+
+    # Check archiso
+    result = subprocess.run(["pacman", "-Q", "archiso"], capture_output=True, text=True)
+    current = result.stdout.strip() if result.returncode == 0 else "not installed"
+    log(f"Using {current}")
+
+    log("Building BLOAT OS ISO...")
+    log("This will take a while. Go get a snack.")
+    run(["sudo", "mkarchiso", "-v", "-w", str(WORK), "-o", str(OUT), str(BLOATOS_ISO)])
+
+    iso = find_iso()
+    if iso:
+        size = os.path.getsize(iso)
+        log(f"ISO: {iso} ({size / 1024 / 1024 / 1024:.2f} GiB)")
+    return iso
+
+def cmd_copy(args):
+    iso = args.iso or find_iso()
+    if not iso or not os.path.exists(iso):
+        log("ERROR: no ISO found. Build one first or pass --iso.")
+        sys.exit(1)
+
+    log(f"Writing {iso} to {args.device}...")
+    size = os.path.getsize(iso)
+    if shutil.which("pv"):
+        subprocess.run(f"pv -s {size} '{iso}' | sudo dd of='{args.device}' bs=100M oflag=sync", shell=True, check=True)
+    else:
+        run(["sudo", "dd", f"if={iso}", f"of={args.device}", "bs=100M", "status=progress", "oflag=sync"])
+    log(f"Done! {args.device} is bootable.")
+
+def cmd_qemu(args):
+    iso = args.iso or find_iso()
+    if not iso or not os.path.exists(iso):
+        log("ERROR: no ISO found. Build one first or pass --iso.")
+        sys.exit(1)
+
+    mem = getattr(args, 'memory', "4G")
+    log(f"Launching QEMU with {mem} RAM...")
+    run([
+        "qemu-system-x86_64", "-m", mem, "-cdrom", iso,
+        "-boot", "d", "-vga", "virtio", "-display", "gtk",
+        "-cpu", "host", "-enable-kvm", "-smp", "4",
+        "-netdev", "user,id=net0", "-device", "e1000,netdev=net0",
+    ])
+
+def cmd_clean(args):
+    log("Cleaning up...")
+    run(["sudo", "umount", "-R", str(WORK)], check=False)
+    run(["sudo", "losetup", "-D"], check=False)
+    run(["sudo", "rm", "-rf", str(WORK)])
+    log("Clean.")
+
+def main():
+    p = argparse.ArgumentParser(description="BLOAT OS - The MOST BLOATED Arch Derivative")
+    p.add_argument("--iso", help="Path to existing ISO (skip build)")
+
+    sub = p.add_subparsers(dest="command", required=True)
+
+    sub.add_parser("build", help="Build BLOAT OS ISO")
+    sub.add_parser("clean", help="Remove work directory")
+
+    copy = sub.add_parser("copy", help="Write ISO to USB")
+    copy.add_argument("device", help="e.g. /dev/sda")
+    copy.add_argument("--iso", help="ISO path (default: latest in out/)")
+
+    qemu = sub.add_parser("qemu", help="Boot ISO in QEMU")
+    qemu.add_argument("--iso", help="ISO path (default: latest in out/)")
+    qemu.add_argument("-m", "--memory", default="4G", help="RAM (default: 4G)")
+
+    flash = sub.add_parser("flash", help="Build + copy to USB")
+    flash.add_argument("device", help="e.g. /dev/sda")
+
+    all_p = sub.add_parser("all", help="Build + copy + qemu in sequence")
+    all_p.add_argument("device", nargs="?", help="USB device (optional)")
+    all_p.add_argument("--memory", default="4G")
+    all_p.add_argument("--skip-copy", action="store_true")
+    all_p.add_argument("--skip-qemu", action="store_true")
+
+    args = p.parse_args()
+
+    if args.command == "build":
+        cmd_build(args)
+    elif args.command == "clean":
+        cmd_clean(args)
+    elif args.command == "copy":
+        cmd_copy(args)
+    elif args.command == "qemu":
+        cmd_qemu(args)
+    elif args.command == "flash":
+        iso = cmd_build(args)
+        args.iso = iso
+        cmd_copy(args)
+    elif args.command == "all":
+        iso = cmd_build(args)
+        args.iso = iso
+        if not getattr(args, 'skip_copy', False) and args.device:
+            cmd_copy(args)
+        if not getattr(args, 'skip_qemu', False):
+            cmd_qemu(args)
+
+if __name__ == "__main__":
+    main()
