@@ -123,153 +123,211 @@ wireless-regdb
 wireless_tools
 wpa_supplicant
 wvdial
-xfsprogs
+xfs-progs
 xl2tpd
 zsh
 
 
 # everything above comes from archiso releng folder
 #######################################################
-###                    ALCI                         ###
+###                  BLOAT OS                       ###
 #######################################################
 
 #######################################################
-###  PACKAGES THAT ARE REMOVED AFTER INSTALLATION   ###
-###             VIA CALAMARES CONFIG                ###
+###  LIVE ISO ONLY - REMOVED AFTER INSTALLATION     ###
 #######################################################
 
-alci-dwm
-#alci-dwm-nemesis
+# Calamares installer
 alci-calamares
-#alci-calamares-dev
 alci-calamares-config
-#alci-calamares-config-btrfs
-#alci-calamares-config-dev
-#alci-calamares-config-hardened
-#alci-calamares-config-lts
-#alci-calamares-config-pure
-#alci-calamares-config-xanmod
-#alci-calamares-config-zen
-xterm
 
-#######################################################
-###      PACKAGES THAT STAY AFTER INSTALLATION      ###
-#######################################################
-
-sddm
-bash-completion
-os-prober
-dex
-libxinerama
-make
+# Xorg for live session (Calamares needs it)
+xorg-server
+xorg-xinit
+xorg-apps
 xorg-xkill
 xterm
-xorg-xrdb
+
+# Minimal live session tools
+xdg-utils
+xclip
+
+#######################################################
+###      REPO KEYRINGS (stay after install)         ###
+#######################################################
+
+# Chaotic-AUR keys and mirrorlist
+chaotic-mirrorlist
+chaotic-keyring
+
+# BLOAT OS custom repo keyring (if we had one)
+#bloatos-keyring
+
+#######################################################
+###         CORE DESKTOP ENVIRONMENT                ###
+#######################################################
+
+# Display manager
+sddm
+
+# Full KDE Plasma (THE BLOAT BEGINS)
+plasma-meta
+plasma-workspace
+plasma-desktop
+plasma-setup-git
+
+# Full KDE Applications
+kde-applications-meta
+
+# KDE extras
+kde-gtk-config
+kdeconnect
+plasma-nm
+plasma-pa
+konsole
+dolphin
+kate
+kwrite
+
+#######################################################
+###         ESSENTIAL SYSTEM TOOLS                  ###
+#######################################################
+
+bash-completion
+os-prober
+networkmanager
+network-manager-applet
+make
+git
+base-devel
+linux-headers
 mkinitcpio-openswap
 
-##### you can also use nmtui from the terminal
-#networkmanager
-#network-manager-applet
-
 #######################################################
-###                    EXTRAS                       ###
+###         BLOAT - DEVELOPMENT                     ###
 #######################################################
 
-##### xorg applications
+neovim
+emacs
+github-cli
+docker
+podman
+python
+python-pip
+nodejs
+npm
 
-#xorg-server
-#xorg-apps
-#neofetch
+#######################################################
+###         BLOAT - BROWSERS                        ###
+#######################################################
 
+firefox
+chromium
 
-##### Drivers for graphical cards
+# From Chaotic-AUR (if available)
+brave-bin
+zen-browser-bin
 
-#driver for virtualbox - xf86-video-vmware is dependency
-#systemctl enable vboxservice
-#systemctl start vboxservice
-#to have fullscreen
-#virtualbox-guest-utils
+#######################################################
+###         BLOAT - MEDIA & CREATIVE                ###
+#######################################################
 
-#xf86-video-intel
-#xf86-video-amdgpu
-#xf86-video-nouveau
+obs-studio
+blender
+gimp
+inkscape
+krita
+kdenlive
+vlc
+ffmpeg
+imagemagick
 
-#nvidia
-#nvidia-settings
-#nvidia-utils
+#######################################################
+###         BLOAT - GAMING                          ###
+#######################################################
 
+steam
+lutris
+wine
+gamemode
+mangohud
 
+# From Chaotic-AUR
+heroic-games-launcher-bin
 
-##### lightdm display manager
+#######################################################
+###         BLOAT - COMMUNICATION                   ###
+#######################################################
 
-#lightdm
-#lightdm-gtk-greeter
+discord
+telegram-desktop
 
-##### sddm display manager
+# From Chaotic-AUR
+spotify
 
-#sddm
-#alci-sddm-plasma-archpaint
+#######################################################
+###         BLOAT - OFFICE                          ###
+#######################################################
 
-##### gdm display manager
+libreoffice-fresh
 
-#gdm
+#######################################################
+###         BLOAT - THEMES & EYE CANDY              ###
+#######################################################
 
+papirus-icon-theme
+breeze-icons
+archlinux-wallpaper
+neofetch
 
+#######################################################
+###         BLOAT - FUN & USELESS                   ###
+#######################################################
 
-##### want to have base-devel group
+cmatrix
+cowsay
+figlet
+lolcat
+fortune-mod
+nyancat
+sl
+cbonsai
+toilet
+asciiquarium
+oneko
+xeyes
 
-#base-devel
+#######################################################
+###         BLOAT - AI & ML (ULTIMATE BLOAT)        ###
+#######################################################
 
-##### want to have linux-headers
+# If available in repos or Chaotic-AUR
+ollama
+python-pytorch
+python-tensorflow
+python-numpy
+python-pandas
 
-#linux-headers
+#######################################################
+###         DRIVERS & HARDWARE                      ###
+#######################################################
 
+# Graphics drivers
+xf86-video-intel
+xf86-video-amdgpu
+xf86-video-nouveau
+xf86-video-vmware
+nvidia
+nvidia-settings
+nvidia-utils
 
+# Virtualization
+virtualbox
+virtualbox-host-modules-arch
+qemu-full
 
-##### want to have a desktop
+#######################################################
+###         GRUB THEME                              ###
+#######################################################
 
-#test
-#xfce4
-#xfce4-goodies
-#neofetch
-
-
-##### want to add/use the ArcoLinux repos
-
-#arcolinux-mirrorlist-git
-#arcolinux-keyring
-
-#test
-#arcolinux-wallpapers-git
-
-##### want to add/use the Chaotic repo
-
-#chaotic-mirrorlist
-#chaotic-keyring
-
-#test
-#colloid-cursors-git
-
-
-##### want to add/use your local repo packages
-##### create your packages and put them in the local repo
-
-#There is a copy of the local repo in your folder
-#Copy/paste it to your homefolder
-#Change the name erik to your own username
-#update the database
-
-#test
-#nemesis-wallpapers
-
-
-#### want have a btrfs format
-#### use alci-calamares-config-btrfs 
-
-#timeshift
-#grub-btrfs
-#timeshift-autosnap
-git
-
-#grub theme
 alci-grub-theme-git

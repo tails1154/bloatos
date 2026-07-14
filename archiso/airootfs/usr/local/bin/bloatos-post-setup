@@ -1,0 +1,35 @@
+#!/bin/bash
+# BLOAT OS Post-Setup Script
+# Runs after plasma-setup completes (before display manager).
+# Sets up the first-run bloat installer for the new user.
+
+BLOAT_DIR="/etc/bloatos"
+FLAG_FILE="$BLOAT_DIR/bloat-install-done"
+
+# Check if already done
+if [[ -f "$FLAG_FILE" ]]; then
+    exit 0
+fi
+
+mkdir -p "$BLOAT_DIR"
+
+# Find the newly created user (the one with UID >= 1000, not plasma-setup)
+NEW_USER=$(awk -F: '$3 >= 1000 && $3 < 65534 {print $1}' /etc/passwd | grep -v "nobody" | head -1)
+
+if [[ -z "$NEW_USER" ]]; then
+    echo "No new user found. Skipping bloat setup."
+    exit 0
+fi
+
+echo "Setting up BLOAT for user: $NEW_USER"
+
+# Copy autostart desktop file to the new user's home
+USER_HOME=$(eval echo ~$NEW_USER)
+mkdir -p "$USER_HOME/.config/autostart"
+cp /etc/xdg/autostart/bloatos-first-run.desktop "$USER_HOME/.config/autostart/"
+chown -R "$NEW_USER:$NEW_USER" "$USER_HOME/.config"
+
+# Mark as done
+touch "$FLAG_FILE"
+
+echo "BLOAT OS post-setup complete. First-run installer configured."

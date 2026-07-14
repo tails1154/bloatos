@@ -1,0 +1,11 @@
+NAME="BLOAT OS"
+PRETTY_NAME="BLOAT OS - The MOST BLOATED Arch Derivative"
+ID=bloatos
+ID_LIKE=arch
+BUILD_ID=2025.07
+ANSI_COLOR="38;2;255;0;255"
+HOME_URL="https://github.com/tails1154/bloatos"
+DOCUMENTATION_URL="https://github.com/tails1154/bloatos/wiki"
+SUPPORT_URL="https://github.com/tails1154/bloatos/issues"
+BUG_REPORT_URL="https://github.com/tails1154/bloatos/issues"
+LOGO=bloatos

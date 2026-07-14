@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=BLOAT OS First Run Bloat Installer
+Comment=Installs the ULTIMATE BLOAT on first login
+Exec=/usr/local/bin/bloatos-first-run
+Type=Application
+X-GNOME-Autostart-enabled=true
+OnlyShowIn=KDE;GNOME;XFCE;LXDE;Unity;
+NotShowIn=
+Terminal=false
+Icon=preferences-desktop

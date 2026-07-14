@@ -1,0 +1,51 @@
+#!/bin/bash
+# BLOAT OS Live ISO Auto-Start Script
+# Automatically launches Calamares installer on boot
+
+if [[ $(tty) != "/dev/tty1" ]]; then
+    exit 0
+fi
+
+# Wait for system to be ready
+echo "========================================"
+echo "     WELCOME TO BLOAT OS"
+echo "  The MOST BLOATED Arch Derivative"
+echo "========================================"
+echo ""
+echo "Preparing the installer..."
+echo ""
+
+# Wait for network and pacman-init
+sleep 2
+systemctl --quiet is-active pacman-init.service || true
+
+# Choose mirror
+/usr/local/bin/choose-mirror || true
+
+# Start Calamares in an X session
+echo "Starting BLOAT OS Installer..."
+echo ""
+
+# Create minimal xinitrc
+mkdir -p /root
+cat > /root/.xinitrc << 'EOF'
+#!/bin/bash
+# BLOAT OS live xinitrc
+
+# Set background to black
+xsetroot -solid black &
+
+# Start Calamares
+exec sudo calamares -d
+EOF
+
+chmod +x /root/.xinitrc
+
+# Start X and Calamares
+startx /root/.xinitrc -- :0 vt1
+
+# If Calamares exits, reboot or shutdown
+echo ""
+echo "Installation complete. Rebooting..."
+sleep 3
+reboot

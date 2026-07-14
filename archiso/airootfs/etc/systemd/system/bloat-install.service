@@ -1,0 +1,13 @@
+[Unit]
+Description=BLOAT OS Post-Setup Bloat Installer
+After=display-manager.service plasma-setup.service
+Wants=display-manager.service
+ConditionPathExists=!/etc/bloatos/bloat-install-done
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/bloatos-post-setup
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

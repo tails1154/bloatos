@@ -1,0 +1,10 @@
+# BLOAT OS plasma-setup configuration
+# This file configures how Plasma Setup behaves on first boot.
+
+[General]
+# Distro name shown in the setup wizard
+distroName=BLOAT OS
+
+[Accounts]
+# Additional groups that the created user should join
+UserGroups=wheel,audio,video,network,storage,optical,scanner,power

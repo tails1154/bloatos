@@ -1,0 +1,127 @@
+#!/bin/bash
+# BLOAT OS First-Run Bloat Installer
+# Runs on the new user's first login to install selected bloat.
+
+CONFIG_FILE="$HOME/.config/bloatos/bloat-selections.conf"
+FLAG_FILE="$HOME/.config/bloatos/first-run-done"
+
+# Check if already run
+if [[ -f "$FLAG_FILE" ]]; then
+    exit 0
+fi
+
+mkdir -p "$HOME/.config/bloatos"
+
+# Default selections (all enabled by default - this IS BLOAT OS!)
+INSTALL_AI=true
+INSTALL_GAMES=true
+INSTALL_BROWSERS=true
+INSTALL_DEV=true
+INSTALL_MEDIA=true
+INSTALL_THEMES=true
+INSTALL_FUN=true
+INSTALL_OFFICE=true
+
+# Show the BLOAT dialog using kdialog or zenity
+show_bloat_dialog() {
+    if command -v kdialog &>/dev/null; then
+        RESULT=$(kdialog --checklist "BLOAT OS - Select Your BLOAT" \
+            ai "AI & Machine Learning (ollama, pytorch)" on \
+            games "Gaming (Steam, Lutris, Heroic, MangoHud)" on \
+            browsers "Extra Browsers (Brave, Zen)" on \
+            dev "Development (Docker, extra tools)" on \
+            media "Media & Creative (OBS, Krita, extra codecs)" on \
+            themes "Themes & Eye Candy (icons, cursors, conky)" on \
+            fun "Fun & Useless (cmatrix, cowsay, nyancat)" on \
+            office "Office Suite (LibreOffice, OnlyOffice)" on \
+            --title "BLOAT OS - Install BLOAT" \
+            --geometry 600x500)
+    elif command -v zenity &>/dev/null; then
+        RESULT=$(zenity --list --checklist \
+            --title="BLOAT OS - Install BLOAT" \
+            --text="Select the bloat you want installed:" \
+            --column="Install" --column="Category" --column="Description" \
+            TRUE "ai" "AI & Machine Learning (ollama, pytorch)" \
+            TRUE "games" "Gaming (Steam, Lutris, Heroic, MangoHud)" \
+            TRUE "browsers" "Extra Browsers (Brave, Zen)" \
+            TRUE "dev" "Development (Docker, extra tools)" \
+            TRUE "media" "Media & Creative (OBS, Krita, extra codecs)" \
+            TRUE "themes" "Themes & Eye Candy (icons, cursors, conky)" \
+            TRUE "fun" "Fun & Useless (cmatrix, cowsay, nyancat)" \
+            TRUE "office" "Office Suite (LibreOffice, OnlyOffice)")
+    else
+        # Fallback: install everything
+        echo "No dialog tool found. Installing ALL THE BLOAT!"
+        RESULT="ai games browsers dev media themes fun office"
+    fi
+    echo "$RESULT"
+}
+
+# Install selected packages
+install_bloat() {
+    local selections="$1"
+    local packages=""
+
+    if [[ "$selections" == *"ai"* ]]; then
+        packages+=" ollama python-pytorch python-tensorflow python-numpy python-pandas"
+    fi
+
+    if [[ "$selections" == *"games"* ]]; then
+        packages+=" steam lutris wine gamemode mangohud heroic-games-launcher-bin"
+    fi
+
+    if [[ "$selections" == *"browsers"* ]]; then
+        packages+=" brave-bin zen-browser-bin"
+    fi
+
+    if [[ "$selections" == *"dev"* ]]; then
+        packages+=" docker podman python-pip nodejs npm github-cli"
+    fi
+
+    if [[ "$selections" == *"media"* ]]; then
+        packages+=" obs-studio krita kdenlive vlc ffmpeg imagemagick"
+    fi
+
+    if [[ "$selections" == *"themes"* ]]; then
+        packages+=" papirus-icon-theme archlinux-wallpaper neofetch conky variety"
+    fi
+
+    if [[ "$selections" == *"fun"* ]]; then
+        packages+=" cmatrix cowsay figlet lolcat fortune-mod nyancat sl cbonsai toilet asciiquarium oneko xeyes"
+    fi
+
+    if [[ "$selections" == *"office"* ]]; then
+        packages+=" libreoffice-fresh onlyoffice-bin"
+    fi
+
+    if [[ -n "$packages" ]]; then
+        # Show installation progress
+        if command -v kdialog &>/dev/null; then
+            dbusRef=$(kdialog --progressbar "Installing BLOAT... This may take a while." 100)
+        elif command -v zenity &>/dev/null; then
+            (echo "Installing BLOAT packages..."; pkexec pacman -S --noconfirm $packages) | zenity --progress --pulsate --title="Installing BLOAT" --text="Installing your selected bloat packages..." --auto-close
+            return
+        fi
+
+        # Fallback: use pkexec directly
+        pkexec pacman -S --noconfirm $packages
+    fi
+}
+
+# Main
+SELECTIONS=$(show_bloat_dialog)
+
+if [[ -n "$SELECTIONS" ]]; then
+    install_bloat "$SELECTIONS"
+    echo "Selections: $SELECTIONS" > "$CONFIG_FILE"
+fi
+
+# Mark as done
+touch "$FLAG_FILE"
+
+# Show completion message
+if command -v kdialog &>/dev/null; then
+    kdialog --msgbox "BLOAT installation complete! Enjoy your bloated system!"
+elif command -v zenity &>/dev/null; then
+    zenity --info --text="BLOAT installation complete! Enjoy your bloated system!"
+fi

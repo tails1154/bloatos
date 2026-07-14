@@ -41,4 +41,6 @@ automated_script() {
 
 if [[ $(tty) == "/dev/tty1" ]]; then
     automated_script
+    # BLOAT OS: Auto-start the installer
+    /usr/local/bin/bloatos-live-start
 fi

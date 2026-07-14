@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "KDE/PlasmaSetup",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "bloatos@example.com",
+                "Name": "BLOAT OS Team"
+            }
+        ],
+        "Description": "Install the ULTIMATE BLOAT on your new system.",
+        "Description[en]": "Install the ULTIMATE BLOAT on your new system.",
+        "Id": "org.kde.plasmasetup.bloatinstall",
+        "License": "GPL-2.0-or-later",
+        "Name": "BLOAT Installer",
+        "Name[en]": "BLOAT Installer",
+        "Version": "1.0",
+        "Website": "https://github.com/tails1154/bloatos"
+    },
+    "NoDisplay": true,
+    "X-KDE-ParentApp": "org.kde.plasmasetup",
+    "X-KDE-Weight": 55
+}
