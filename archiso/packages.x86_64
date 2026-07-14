@@ -60,9 +60,8 @@ zsh
 ###               BLOAT OS INSTALLER                ###
 #######################################################
 
-# Calamares installer
+# Calamares installer (config from airootfs, not the package)
 alci-calamares
-alci-calamares-config
 
 # Xorg for live session (Calamares GUI)
 xorg-server

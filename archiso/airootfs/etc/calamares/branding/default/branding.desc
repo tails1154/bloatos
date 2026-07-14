@@ -1,0 +1,29 @@
+---
+componentName:  default
+welcomeStyleCalamares:   false
+welcomeExpandingLogo:   true
+windowExpanding:    normal
+windowSize: 1024px,735px
+windowPlacement: center
+sidebar: widget
+navigation: widget
+strings:
+    productName:         BLOAT OS
+    shortProductName:    BLOAT OS
+    version:             2025.07
+    shortVersion:        2025.07
+    versionedName:       BLOAT OS
+    shortVersionedName:  BLOAT OS
+    bootloaderEntryName: BLOAT OS
+images:
+    productIcon:         "squid.png"
+    productLogo:         "squid.png"
+    productWelcome:      "alci.png"
+style:
+   SidebarBackground:    "#292F34"
+   SidebarText:          "#FFFFFF"
+slideshow:               "show.qml"
+slideshowAPI: 2
+uploadServer :
+    type :    "fiche"
+    url :     "http://termbin.com:9999"
